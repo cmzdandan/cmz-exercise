@@ -1,5 +1,7 @@
 package com.cmz.volatiled;
 
+import java.util.concurrent.atomic.AtomicInteger;
+
 /**
  * @author chen.mz
  * @email 1034667543@qq.com
@@ -20,6 +22,7 @@ public class VolatileAtomicDemo {
             new Thread(() -> {
                 for(int j = 0; j < 1000; j++) {
                     myData.addPlusPlus();
+                    myData.addAtomic();
                 }
             }, "Thread-" + i).start();
         }
@@ -30,15 +33,24 @@ public class VolatileAtomicDemo {
             Thread.yield();
         }
         // 打印最终的计算结果，验证是否保证原子性
-        System.out.println(Thread.currentThread().getName() + " finally the result is :" + myData.number);
+        System.out.println(Thread.currentThread().getName() + " int type finally the result is :" + myData.number);
+        System.out.println(Thread.currentThread().getName() + " AtomicInteger finally the result is :" + myData.atomicInteger);
     }
 
 }
 
 class MyData {
+    // volatile 不保证原子性
     volatile int number = 0;
 
     public void addPlusPlus() {
         number++;
+    }
+
+    // AtomicInteger 保证原子性，构造函数不传参数，默认值为0
+    AtomicInteger atomicInteger = new AtomicInteger();
+
+    public void addAtomic() {
+        atomicInteger.getAndIncrement();
     }
 }
